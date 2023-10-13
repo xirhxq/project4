@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProtocolGeneratorManager default_selection="default_selection">
+    <table>
+        <element hex="5A" scale="1" value="90.0000000000" datatype="fl_uint8_t" description="1.&#x9;&#x9;帧头&#x9;2&#x9;UINT08&#x9;0xEA、0x9B" name="head1" elementhead="0" bytelength="1" number="0">head1</element>
+        <element hex="FB" scale="1" value="251.0000000000" datatype="fl_uint8_t" description="1.&#x9;&#x9;帧头&#x9;2&#x9;UINT08&#x9;0xEA、0x9B" name="head2" elementhead="1" bytelength="1" number="1">head2</element>
+        <element hex="D6" scale="1" value="214.0000000000" datatype="fl_uint8_t" description="1.&#x9;&#x9;帧ID&#x9;1&#x9;UINT08&#x9;0xC4" name="ID" elementhead="2" bytelength="1" number="2">ID</element>
+        <element hex="00" scale="1" value="0" datatype="fl_uint8_t" description="1.&#x9;&#x9;帧计数&#x9;1&#x9;UINT08&#x9;0-255循环累加" name="frame_count" elementhead="3" bytelength="1" number="3">frame_count</element>
+        <element hex="f3" scale="1" value="243.0000000000" datatype="uint8_t" description="1.&#x9;&#x9;帧长度&#x9;1&#x9;UINT08&#x9;126" name="length" elementhead="4" bytelength="1" number="4">length</element>
+        <element hex="00" scale="1" value="0" datatype="uint8_t" description="0xf3" name="main_cmd" elementhead="5" bytelength="1" number="5">main_cmd</element>
+        <element hex="00" scale="1" value="0" datatype="uint8_t" description="0x10:就地降落，0x28立刻关车" name="sub_command" elementhead="6" bytelength="1" number="6">sub_command</element>
+        <element hex="0000" scale="1" value="0" datatype="uint16_t" description="des" name="param1" elementhead="7" bytelength="2" number="7">param1</element>
+        <element hex="00" scale="1" value="0" datatype="uint16_t" description="des" name="param2" elementhead="9" bytelength="2" number="8">param2</element>
+        <element hex="00" scale="1" value="0" datatype="uint8_t" description="12. 2 校验和 SUM（0~31） 前 32 位和， 取后两位" name="check" elementhead="11" bytelength="1" number="9">check</element>
+    </table>
+</ProtocolGeneratorManager>
