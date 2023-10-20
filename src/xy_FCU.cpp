@@ -172,7 +172,7 @@ static void ground_station_sci_recv_sig(int status)
 {
     status=0;
     recv_ground_station_signal=1;
-    printf("ground_station_sci_recv_sig\r\n");
+    //printf("ground_station_sci_recv_sig\r\n");
     sem_post(&ground_station_sem_r);
     return;
 }
@@ -194,12 +194,12 @@ void * read_thread(void * arg)					//read meassage from pod
             if(recv_ground_station_signal==1)
             {
       //  cout<<"2ground_station_sem_r come..."<<endl;
-                ret=uart.read_data(buff,100);
-              //   printf("recv data:\r\n");
-              //   for (int i=0;i<ret;i++) {
-              //       printf("0x%x ",buff[i]);
-              //   }
-              //   printf("\r\n");
+                ret=uart.read_data(buff,120);
+              printf("recv data:\r\n");
+              for (int i=0;i<ret;i++) {
+                 printf("0x%x ",buff[i]);
+                 }
+                 printf("\r\n");
                 recv_ground_station_signal=0;
                 if(ret>0)
                 {
@@ -261,7 +261,7 @@ void * read_thread(void * arg)					//read meassage from pod
                         printf("\r\n");
                      //    */
                     }
-                    printf("for test : recv_ok the num is %d\r\n",ret);
+                    //printf("for test : recv_ok the num is %d\r\n",ret);
                 }
             } 
         }
@@ -303,21 +303,22 @@ void * write_thread(void * arg)					//write cmd to FCU
           if(xy_cmd_mode.flight_cmd_mode==11)
 	{
 		gs.pack_process();
-		printf("send user cmd data:\r\n");
+		printf("send user cmd data:\n");
 		for (int i=0;i<gs.control_infor_out_buff.length();i++) 
 		{
 		printf("0x%x ",gs.control_infor_out_buff.buff()[i]);
 		}
+		printf("\n");
 	}
           else if(xy_cmd_mode.flight_cmd_mode==22)   
 	{
               gs.pack_process_N2();
-		printf("send landing cmd data:\r\n");
+		printf("send landing cmd data:\n");
            for (int i = 0; i < gs.newctrl_infor_out_buff.length(); i++)
            {
                printf("0x%x ", gs.newctrl_infor_out_buff.buff()[i]);
            }
-           printf("\r\n");
+           printf("\n");
 	}
 
 
