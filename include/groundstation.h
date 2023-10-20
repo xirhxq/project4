@@ -81,6 +81,12 @@ typedef struct
     */
     unsigned char throttle_percentage;
 
+	short angleRateX;
+	short angleRateY;
+	short angleRateZ;
+	unsigned short param1;
+	unsigned short param2;
+
 }control_infor_out_t;
 
 typedef struct

@@ -268,6 +268,26 @@ int GroundStation::pack_process()
           ,&control_infor_out.throttle_percentage,
            1);
     pos  +=  1;
+    memcpy(&(buff[pos])
+          ,&control_infor_out.angleRateX,
+           2);
+    pos  +=  2;
+    memcpy(&(buff[pos])
+          ,&control_infor_out.angleRateY,
+           2);
+    pos  +=  2;
+    memcpy(&(buff[pos])
+          ,&control_infor_out.angleRateZ,
+           2);
+    pos  +=  2;
+    memcpy(&(buff[pos])
+          ,&control_infor_out.param1,
+           2);
+    pos  +=  2;
+    memcpy(&(buff[pos])
+          ,&control_infor_out.param2,
+           2);
+    pos  +=  2;
 
     if(gs_tx2_protocl_douwn->read_data(buff,pos+1)==0)
     {
