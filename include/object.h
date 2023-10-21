@@ -6,13 +6,13 @@
 typedef void (*signal_handler_t)(int status);
 
 
-
-class Object
-{
+class Object {
 public:
     Object();
-    virtual int read_data(unsigned char *buf,unsigned int size);
-    virtual int write_data(const unsigned char *buf,unsigned int size);
+
+    virtual int read_data(unsigned char *buf, unsigned int size);
+
+    virtual int write_data(const unsigned char *buf, unsigned int size);
 
     virtual int child_signal(class Object *);
 
@@ -23,17 +23,23 @@ protected:
 
 };
 
-class Buff:public Object
-{
+class Buff : public Object {
 public:
     Buff();
+
     int length();
-    int read_data(unsigned char *buf,unsigned int size)  override;
-    int write_data(const unsigned char *buf,unsigned int size) override;
+
+    int read_data(unsigned char *buf, unsigned int size) override;
+
+    int write_data(const unsigned char *buf, unsigned int size) override;
+
     unsigned char *buff();
+
     int child_signal(class Object *) override;
+
 private:
     unsigned char buff_temp[500];
-    int           buff_length;
+    int buff_length;
 };
+
 #endif // OBJECT_H
