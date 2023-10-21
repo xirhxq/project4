@@ -69,6 +69,12 @@ typedef struct {
     short gy;
     short gz;
     unsigned char uav_status;
+    unsigned char uavStage;
+    unsigned short uavHealthStatus1, uavHealthStatus2;
+    unsigned int systemClock;
+    unsigned char year, month, day, hour, minute, second;
+    unsigned short pwm[10];
+    short expectedAngleRate[3];
 
 } control_infor_in_t;
 
@@ -150,7 +156,13 @@ struct XY_DATA {
     float UAV_acc[3];
     float UAV_gyro[3];
     int UAV_status;
-
+    int uavStage;
+    int uavHealthStatus1;
+    int uavHealthStatus2;
+    int systemClock;
+    int year, month, day, hour, minute, second;
+    int pwm[10];
+    double expectedAngleRate[3];
 };
 extern XY_DATA xy_data;
 

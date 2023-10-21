@@ -43,11 +43,14 @@
 #include <geometry_msgs/Quaternion.h>
 
 //#define printf
+#define PI acos(-1)
+#define RAD2DEG (180 / PI)
+#define DEG2RAD (PI / 180)
 
 
 using namespace std;
 XY_CMD_MODE xy_cmd_mode;
-/*----------------------È«¾Ö±äÁ¿È¡--------------------------------*/
+
 std_msgs::Float32MultiArray msg;
 ros::Publisher gs_data_pub;
 ros::Subscriber guidance_command_sub;
@@ -119,7 +122,7 @@ int main(int argc, char *argv[]) {
 
         //cout<<"~~~in~~~ horizonal_mode:"<<xy_data.horizonal_mode<<", UAV_height:"<<xy_data.UAV_height<<", Vx:"<<xy_data.UAV_Vel[0]<<", Xm:"<< xy_data.UAV_pos[0]<<", roll_deg:"<< xy_data.UAV_Euler[0]*57.3<<", cur_throttle:"<< xy_data.cur_throttle  <<"UAV_status:"<< xy_data.UAV_status<<endl;
 
-        msg.data.resize(24);
+        msg.data.resize(47);
         msg.data[0] = xy_data.horizonal_mode;
         msg.data[1] = xy_data.vertical_mode;
         msg.data[2] = xy_data.yaw_mode;
@@ -144,6 +147,22 @@ int main(int argc, char *argv[]) {
         msg.data[21] = xy_data.UAV_gyro[1];
         msg.data[22] = xy_data.UAV_gyro[2];
         msg.data[23] = xy_data.UAV_status;
+        msg.data[24] = xy_data.uavStage;
+        msg.data[25] = xy_data.uavHealthStatus1;
+        msg.data[26] = xy_data.uavHealthStatus2;
+        msg.data[27] = xy_data.systemClock;
+        msg.data[28] = xy_data.year;
+        msg.data[29] = xy_data.month;
+        msg.data[30] = xy_data.day;
+        msg.data[31] = xy_data.hour;
+        msg.data[32] = xy_data.minute;
+        msg.data[33] = xy_data.second;
+        for (int _ = 0; _ < 10; _++) {
+            msg.data[_ + 34] = xy_data.pwm[_];
+        }
+        msg.data[44] = xy_data.expectedAngleRate[0];
+        msg.data[45] = xy_data.expectedAngleRate[1];
+        msg.data[46] = xy_data.expectedAngleRate[2];
 
         gs_data_pub.publish(msg);
         rate.sleep();
@@ -165,6 +184,17 @@ static void ground_station_sci_recv_sig(int status) {
     return;
 }
 
+std::string getBinary(int x, int length) {
+    std::string res;
+    for (int i = length - 1; i >= 0; i--) {
+        if ((x >> i) & 1) {
+            res += "1";
+        }
+        else res += "0";
+    }
+    return res;
+}
+
 void *read_thread(void *arg) {
     int ret = 0;
     unsigned char buff[1024];
@@ -177,10 +207,12 @@ void *read_thread(void *arg) {
             if (recv_ground_station_signal == 1) {
                 //  cout<<"2ground_station_sem_r come..."<<endl;
                 ret = uart.read_data(buff, 120);
+                /*//
                 printf("recv data:\r\n");
                 for (int i = 0; i < ret; i++) {
                     printf("0x%x ", buff[i]);
                 }
+                //*/
                 printf("\r\n");
                 recv_ground_station_signal = 0;
                 if (ret > 0) {
@@ -189,7 +221,69 @@ void *read_thread(void *arg) {
                     gs.unpack_process();
 
                     if (gs.gs_state & GS_RECV_CONTROL_MODE) {
-                        // /*
+                        printf("Mode: %1d|%1d|%1d\n", 
+                            xy_data.horizonal_mode,
+                            xy_data.vertical_mode,
+                            xy_data.yaw_mode
+                        );
+                        printf("GPS: [%.6lf, %.6lf, %.2f(%.2f)]\n",
+                            xy_data.UAV_lat,
+                            xy_data.UAV_lon,
+                            xy_data.UAV_height,
+                            xy_data.baro_height
+                        );
+                        printf("Vel: [%.2f, %.2f, %.2f]\n",
+                            xy_data.UAV_Vel[0],
+                            xy_data.UAV_Vel[1],
+                            xy_data.UAV_Vel[2]
+                        );
+                        printf("Pos: [%.2f, %.2f, %.2f]\n",
+                            xy_data.UAV_pos[0],
+                            xy_data.UAV_pos[1],
+                            xy_data.UAV_pos[2]
+                        );
+                        printf("EulerDeg: [%.2f, %.2f, %.2f]\n",
+                            xy_data.UAV_Euler[0] * RAD2DEG,
+                            xy_data.UAV_Euler[1] * RAD2DEG,
+                            xy_data.UAV_Euler[2] * RAD2DEG
+                        );
+                        printf("Throttle: %.2f\n",
+                            xy_data.cur_throttle
+                        );
+                        printf("Acc: [%.2f, %.2f, %.2f]\n",
+                            xy_data.UAV_acc[0],
+                            xy_data.UAV_acc[1],
+                            xy_data.UAV_acc[2]
+                        );
+                        printf("Gyro: [%.2f, %.2f, %.2f]\n",
+                            xy_data.UAV_gyro[0],
+                            xy_data.UAV_gyro[1],
+                            xy_data.UAV_gyro[2]
+                        );
+                        printf("Status: %3d\n", xy_data.UAV_status);
+                        printf("Stage: %2d\n", xy_data.uavStage);
+                        printf("Health: %d[%s]|%d[%s]\n",
+                            xy_data.uavHealthStatus1, 
+                            getBinary(xy_data.uavHealthStatus1, 15).c_str(), 
+                            xy_data.uavHealthStatus2, 
+                            getBinary(xy_data.uavHealthStatus2, 14).c_str()
+                        );
+                        printf("Clock: %d[%04d-%02d-%02d %02d:%02d:%02d]\n", 
+                            xy_data.systemClock,
+                            xy_data.year,
+                            xy_data.month,
+                            xy_data.day,
+                            xy_data.hour,
+                            xy_data.minute,
+                            xy_data.second
+                        );
+                        printf("ExpectedAngleRate: [%.2lf, %.2lf, %.2lf]\n",
+                            xy_data.expectedAngleRate[0],
+                            xy_data.expectedAngleRate[1],
+                            xy_data.expectedAngleRate[2]
+                        );
+
+                         /*
                         printf("cur_horizonal_control_mode:%d\t", gs.control_infor_in.cur_horizonal_control_mode);
                         printf("cur_vertical_control_mode:%d\t", gs.control_infor_in.cur_vertical_control_mode);
                         printf("cur_heading_control_mode:%d\t", gs.control_infor_in.cur_heading_control_mode);

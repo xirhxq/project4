@@ -143,9 +143,51 @@ int GroundStation::child_signal(class Object *child) {
             memcpy(&control_infor_in.uav_status, &(control_infor_buff.buff()[pos]), 1);
             xy_data.UAV_status = int(control_infor_in.uav_status);
             pos += 1;
+            memcpy(&control_infor_in.uavStage, &(control_infor_buff.buff()[pos]), 1);
+            xy_data.uavStage = int(control_infor_in.uavStage);
+            pos += 1;
+            memcpy(&control_infor_in.uavHealthStatus1, &(control_infor_buff.buff()[pos]), 2);
+            xy_data.uavHealthStatus1 = int(control_infor_in.uavHealthStatus1);
+            pos += 2;
+            memcpy(&control_infor_in.uavHealthStatus2, &(control_infor_buff.buff()[pos]), 2);
+            xy_data.uavHealthStatus2 = int(control_infor_in.uavHealthStatus2);
+            pos += 2;
+            memcpy(&control_infor_in.systemClock, &(control_infor_buff.buff()[pos]), 4);
+            xy_data.systemClock = int(control_infor_in.systemClock);
+            pos += 4;
+            memcpy(&control_infor_in.year, &(control_infor_buff.buff()[pos]), 1);
+            xy_data.year = int(control_infor_in.year);
+            pos += 1;
+            memcpy(&control_infor_in.month, &(control_infor_buff.buff()[pos]), 1);
+            xy_data.month = int(control_infor_in.month);
+            pos += 1;
+            memcpy(&control_infor_in.day, &(control_infor_buff.buff()[pos]), 1);
+            xy_data.day = int(control_infor_in.day);
+            pos += 1;
+            memcpy(&control_infor_in.hour, &(control_infor_buff.buff()[pos]), 1);
+            xy_data.hour = int(control_infor_in.hour);
+            pos += 1;
+            memcpy(&control_infor_in.minute, &(control_infor_buff.buff()[pos]), 1);
+            xy_data.minute = int(control_infor_in.minute);
+            pos += 1;
+            memcpy(&control_infor_in.second, &(control_infor_buff.buff()[pos]), 1);
+            xy_data.second = int(control_infor_in.second);
+            pos += 1;
+            pos += 2;
+            for (int _ = 0; _ < 10; _++) {
+                memcpy(&control_infor_in.pwm[_], &(control_infor_buff.buff()[pos]), 2);
+                xy_data.pwm[_] = int(control_infor_in.pwm[_]);
+                pos += 2;
+            }
+            pos += 4;
+            for (int _ = 0; _ < 3; _++) {
+                memcpy(&control_infor_in.expectedAngleRate[_], &(control_infor_buff.buff()[pos]), 2);
+                xy_data.expectedAngleRate[_] = double(control_infor_in.expectedAngleRate[_]) / 100.0;
+                pos += 2;
+            }
 
             gs_state |= GS_RECV_CONTROL_MODE;
-            printf("copy succed...\r\n");
+            printf("copy succeed...\r\n");
         }
         //printf("gs_tx2_protocl_up signal\r\n");
 
