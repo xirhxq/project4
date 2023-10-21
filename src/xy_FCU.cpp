@@ -150,14 +150,13 @@ int main(int argc, char *argv[]) {
     }
 
 
-    while (1) {
+    while (true) {
         pthread_join(r_thread, NULL);
         break;
     }
 }
 
 
-/*----------------------È«¾Ö±äÁ¿È¡--------------------------------*/
 static void ground_station_sci_recv_sig(int status) {
     status = 0;
     recv_ground_station_signal = 1;
@@ -166,8 +165,7 @@ static void ground_station_sci_recv_sig(int status) {
     return;
 }
 
-void *read_thread(void *arg)                    //read meassage from pod
-{
+void *read_thread(void *arg) {
     int ret = 0;
     unsigned char buff[1024];
     while (true) {
@@ -232,7 +230,7 @@ void *read_thread(void *arg)                    //read meassage from pod
 void *write_thread(void *arg)                    //write cmd to FCU
 {
 
-    while (1) {
+    while (true) {
         gs.control_infor_out.horizonal_control_mode = xy_cmd_mode.horizonal_control_mode;
         gs.control_infor_out.vertical_control_mode = xy_cmd_mode.vertical_control_mode;
         gs.control_infor_out.heading_control_mode = xy_cmd_mode.heading_control_mode;
@@ -250,7 +248,7 @@ void *write_thread(void *arg)                    //write cmd to FCU
         gs.newctrl_infor_out.sub_command = xy_cmd_mode.landing_cmd;        //0x10：就地降落; 0x28：立即关车
 
 
-        //11:USER_MODE; 22: landing_cmd; 33: no ctr
+        // 11:USER_MODE; 22: landing_cmd; 33: no ctr
         // cout<<"flight_cmd_mode="<<xy_cmd_mode.flight_cmd_mode<<endl;
 
         if (xy_cmd_mode.flight_cmd_mode == 11) {
@@ -270,11 +268,10 @@ void *write_thread(void *arg)                    //write cmd to FCU
         }
 
 
-        int tatol = uart.write_data(gs.newctrl_infor_out_buff.buff(), gs.newctrl_infor_out_buff.length());
-        //==============================================================
+        int total = uart.write_data(gs.newctrl_infor_out_buff.buff(), gs.newctrl_infor_out_buff.length());
 
-        tatol = uart.write_data(gs.control_infor_out_buff.buff(), gs.control_infor_out_buff.length());
-        //            printf("tatol %d\r\n",tatol);
+        total = uart.write_data(gs.control_infor_out_buff.buff(), gs.control_infor_out_buff.length());
+//        printf("total %d\r\n", total);
         usleep(10000);
     }
 
