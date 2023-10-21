@@ -15,9 +15,9 @@ typedef void (*protocol_parsed_ok_func_t)(unsigned char *buff, int length);
 
 typedef enum {
     GS_IDLE = 0x0,
-    GS_RECV_POD = 0x01,//ÊÕµ½µõ²ÕÐÅÏ¢
-    GS_RECV_YX_POWER = 0x02,//ÊÕµ½ÒýÐÅÐÅÏ¢
-    GS_RECV_CONTROL_MODE = 0x04,//ÊÕµ½¿ØÖÆÄ£Ê½ÐÅÏ¢
+    GS_RECV_POD = 0x01,
+    GS_RECV_YX_POWER = 0x02,
+    GS_RECV_CONTROL_MODE = 0x04,
 } GS_State;
 
 typedef struct {

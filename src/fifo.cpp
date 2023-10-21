@@ -36,10 +36,8 @@ int Fifo::write_data(const unsigned char *msg, unsigned int length) {
             fifo_data.write_length++;
         } else {
             fifo_data.full_err++;
-            //���������л�
             return write_length;
         }
     }
-    //���������л�
     return write_length;
 }

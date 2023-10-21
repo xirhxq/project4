@@ -18,7 +18,6 @@ Protocol::Protocol(Object *obj) {
 unsigned char Protocol::frame_check() {
     unsigned char check = 0;
     if (check_num == 0) {
-        //�û���У�� ��ʱ���سɹ�
         return 0;
     }
     for (int j = 0; j < data_length - 1; j++) {
