@@ -9,14 +9,14 @@ int Fifo::child_signal(class Object *) {
 }
 
 int Fifo::length() {
-    fifo_data.legnth = fifo_data.head - fifo_data.tail;
-    return fifo_data.legnth;
+    fifo_data.length = fifo_data.head - fifo_data.tail;
+    return fifo_data.length;
 }
 
 int Fifo::read_data(unsigned char *msg, unsigned int length) {
     unsigned int recNum;
-    fifo_data.legnth = fifo_data.head - fifo_data.tail;//usb_buff.rec_Length_USB;
-    recNum = fifo_data.legnth < length ? fifo_data.legnth : length;
+    fifo_data.length = fifo_data.head - fifo_data.tail;//usb_buff.rec_Length_USB;
+    recNum = fifo_data.length < length ? fifo_data.length : length;
 
     for (int i = 0; i < recNum; i++) {
         msg[i] = fifo_data.buff[(fifo_data.tail)];

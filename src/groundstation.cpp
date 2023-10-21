@@ -13,14 +13,14 @@ XY_DATA xy_data;
 GroundStation::GroundStation() {
     gs_tx2_protocl_up = new Protocol(this);
     gs_pod_protocl = new Protocol(this);
-    gs_tx2_protocl_douwn = new Protocol(this);
+    gs_tx2_protocl_down = new Protocol(this);
     newctrl_to_xy_protocl = new Protocol(this);
 
-    gs_tx2_protocl_douwn->header[0] = 0x5A;
-    gs_tx2_protocl_douwn->header[1] = 0xFB;
-    gs_tx2_protocl_douwn->data_length_pos = 4;
-    gs_tx2_protocl_douwn->frame_length = 6;
-    gs_tx2_protocl_douwn->check_num = 1;
+    gs_tx2_protocl_down->header[0] = 0x5A;
+    gs_tx2_protocl_down->header[1] = 0xFB;
+    gs_tx2_protocl_down->data_length_pos = 4;
+    gs_tx2_protocl_down->frame_length = 6;
+    gs_tx2_protocl_down->check_num = 1;
 
 
     gs_tx2_protocl_up->header[0] = 0xEA;
@@ -28,7 +28,7 @@ GroundStation::GroundStation() {
     gs_tx2_protocl_up->data_length_pos = 4;
     gs_tx2_protocl_up->frame_length = 6;
     gs_tx2_protocl_up->check_num = 1;
-    gs_tx2_protocl_douwn->send_frame_id = USR_MODE_CTR_CMD;
+    gs_tx2_protocl_down->send_frame_id = USR_MODE_CTR_CMD;
 
     /* add by wg
      * data:2021-07-12
@@ -52,8 +52,8 @@ GroundStation::GroundStation() {
 
 int GroundStation::child_signal(class Object *child) {
     //printf("child signal\r\n");
-    if (child == gs_tx2_protocl_douwn) {
-        //printf("gs_tx2_protocl_douwn signal\r\n");
+    if (child == gs_tx2_protocl_down) {
+        //printf("gs_tx2_protocl_down signal\r\n");
     } else if (child == gs_tx2_protocl_up) {
         printf("--------------------------buff:\n");
         for (int i = 0; i < 10; i++) {
@@ -212,7 +212,7 @@ int GroundStation::pack_process() {
     memcpy(&(buff[pos]), &control_infor_out.param2, 2);
     pos += 2;
 
-    if (gs_tx2_protocl_douwn->read_data(buff, pos + 1) == 0) {
+    if (gs_tx2_protocl_down->read_data(buff, pos + 1) == 0) {
         if (control_infor_out_buff.write_data(buff, pos + 1) == 0)
             ret = 0;
         else {
@@ -277,7 +277,7 @@ int GroundStation::unpack_process() {
     int ret = 0;
     ret = read_data(buff, 1000);
     if (ret > 0) {
-        //gs_tx2_protocl_douwn->write_data(buff,ret);
+        //gs_tx2_protocl_down->write_data(buff,ret);
         gs_tx2_protocl_up->write_data(buff, ret);
         //gs_pod_protocl->write_data(buff,ret);
     }

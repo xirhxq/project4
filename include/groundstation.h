@@ -98,7 +98,7 @@ public:
     GroundStation();
 
     Protocol *gs_tx2_protocl_up;
-    Protocol *gs_tx2_protocl_douwn;
+    Protocol *gs_tx2_protocl_down;
     /* add by wg
      * data:2021-07-12
      * add new protocol*/

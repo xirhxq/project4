@@ -6,7 +6,7 @@
 typedef struct {
     unsigned int head: 10;
     unsigned int tail: 10;
-    unsigned int legnth: 10;
+    unsigned int length: 10;
     unsigned int full_err;
     unsigned int write_length;
     unsigned int read_length;
