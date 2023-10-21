@@ -198,7 +198,9 @@ std::string getBinary(int x, int length) {
 void *read_thread(void *arg) {
     int ret = 0;
     unsigned char buff[1024];
-    while (true) {
+
+    ros::NodeHandle nhRead;
+    while (nhRead.ok()) {
         //  sem_wait(&ground_station_sem_r);
 
         if (sem_trywait(&ground_station_sem_r) >= 0) {
@@ -323,8 +325,9 @@ void *read_thread(void *arg) {
 
 void *write_thread(void *arg)                    //write cmd to FCU
 {
+    ros::NodeHandle nhWrite;
 
-    while (true) {
+    while (nhWrite.ok()) {
         gs.control_infor_out.horizonal_control_mode = xy_cmd_mode.horizonal_control_mode;
         gs.control_infor_out.vertical_control_mode = xy_cmd_mode.vertical_control_mode;
         gs.control_infor_out.heading_control_mode = xy_cmd_mode.heading_control_mode;
