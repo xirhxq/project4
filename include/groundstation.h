@@ -6,6 +6,8 @@
 #include "fifo.h"
 #include "common.h"
 
+#include <string>
+
 typedef void (*protocol_parsed_ok_func_t)(unsigned char *buff, int length);
 
 #define USR_MODE_CTR_CMD            0XB2//User mode controls the frame
