@@ -1,5 +1,8 @@
 //#include <QCoreApplication>
 #include "uart.h"
+#include "common.h"
+#include "groundstation.h"
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,10 +44,6 @@
 #include <geometry_msgs/Quaternion.h>
 
 //#define printf
-#define PI acos(-1)
-#define RAD2DEG (180 / PI)
-#define DEG2RAD (PI / 180)
-
 
 using namespace std;
 XY_CMD_MODE xy_cmd_mode;
@@ -66,7 +65,7 @@ static sem_t ground_station_sem_r;//read senmphore
 static unsigned char recv_ground_station_signal;
 
 void guidanceCallback(const std_msgs::Float32MultiArray &msg) {
-    //cout<<"~~1~guidance data: "<< msg.data[12]<<endl;
+    if (msg.data.size() != 15) return;
     xy_cmd_mode.horizonal_control_mode = msg.data[0];
     xy_cmd_mode.vertical_control_mode = msg.data[1];
     xy_cmd_mode.heading_control_mode = msg.data[2];
@@ -79,10 +78,10 @@ void guidanceCallback(const std_msgs::Float32MultiArray &msg) {
     xy_cmd_mode.yaw_ctr = (short) ((msg.data[9]) * 1000);
     xy_cmd_mode.pitch_ctr = (short) (msg.data[10] * 1000);
     xy_cmd_mode.roll_ctr = (short) (msg.data[11] * 1000);
+    xy_cmd_mode.angleRateZ = (short) (msg.data[11] * 100);
     xy_cmd_mode.throttle_percentage = (unsigned char) (msg.data[12]);
-    xy_cmd_mode.flight_cmd_mode = msg.data[13];         //11:USER_MODE;        22: landing_cmd; 33: no ctr
-    xy_cmd_mode.landing_cmd = msg.data[14];         //0x10=16：就地降落; 0x28=40：立即关车
-
+    xy_cmd_mode.flight_cmd_mode = msg.data[13];
+    xy_cmd_mode.landing_cmd = msg.data[14];
 }
 
 
@@ -155,6 +154,11 @@ int main(int argc, char *argv[]) {
 
         gs_data_pub.publish(msg);
         rate.sleep();
+
+        printf("-------------");
+        xy_data.print();
+        printf("------");
+        xy_cmd_mode.print();
     }
 
     while (true) {
@@ -169,17 +173,6 @@ static void ground_station_sci_recv_sig(int status) {
     recv_ground_station_signal = 1;
     sem_post(&ground_station_sem_r);
     return;
-}
-
-std::string getBinary(int x, int length) {
-    std::string res;
-    for (int i = length - 1; i >= 0; i--) {
-        if ((x >> i) & 1) {
-            res += "1";
-        }
-        else res += "0";
-    }
-    return res;
 }
 
 void *read_thread(void *arg) {
@@ -210,95 +203,7 @@ void *read_thread(void *arg) {
                     gs.unpack_process();
 
                     if (gs.gs_state & GS_RECV_CONTROL_MODE) {
-                        printf("Mode: %1d|%1d|%1d\n", 
-                            xy_data.horizonal_mode,
-                            xy_data.vertical_mode,
-                            xy_data.yaw_mode
-                        );
-                        printf("GPS: [%.6lf, %.6lf, %.2f(%.2f)]\n",
-                            xy_data.UAV_lat,
-                            xy_data.UAV_lon,
-                            xy_data.UAV_height,
-                            xy_data.baro_height
-                        );
-                        printf("Vel: [%.2f, %.2f, %.2f]\n",
-                            xy_data.UAV_Vel[0],
-                            xy_data.UAV_Vel[1],
-                            xy_data.UAV_Vel[2]
-                        );
-                        printf("Pos: [%.2f, %.2f, %.2f]\n",
-                            xy_data.UAV_pos[0],
-                            xy_data.UAV_pos[1],
-                            xy_data.UAV_pos[2]
-                        );
-                        printf("EulerDeg: [%.2f, %.2f, %.2f]\n",
-                            xy_data.UAV_Euler[0] * RAD2DEG,
-                            xy_data.UAV_Euler[1] * RAD2DEG,
-                            xy_data.UAV_Euler[2] * RAD2DEG
-                        );
-                        printf("Throttle: %.2f\n",
-                            xy_data.cur_throttle
-                        );
-                        printf("Acc: [%.2f, %.2f, %.2f]\n",
-                            xy_data.UAV_acc[0],
-                            xy_data.UAV_acc[1],
-                            xy_data.UAV_acc[2]
-                        );
-                        printf("Gyro: [%.2f, %.2f, %.2f]\n",
-                            xy_data.UAV_gyro[0],
-                            xy_data.UAV_gyro[1],
-                            xy_data.UAV_gyro[2]
-                        );
-                        printf("Status: %3d\n", xy_data.UAV_status);
-                        printf("Stage: %2d\n", xy_data.uavStage);
-                        printf("Health: %d[%s]|%d[%s]\n",
-                            xy_data.uavHealthStatus1, 
-                            getBinary(xy_data.uavHealthStatus1, 15).c_str(), 
-                            xy_data.uavHealthStatus2, 
-                            getBinary(xy_data.uavHealthStatus2, 14).c_str()
-                        );
-                        printf("Clock: %d[%04d-%02d-%02d %02d:%02d:%02d]\n", 
-                            xy_data.systemClock,
-                            xy_data.year,
-                            xy_data.month,
-                            xy_data.day,
-                            xy_data.hour,
-                            xy_data.minute,
-                            xy_data.second
-                        );
-                        printf("ExpectedAngleRate: [%.2lf, %.2lf, %.2lf]\n",
-                            xy_data.expectedAngleRate[0],
-                            xy_data.expectedAngleRate[1],
-                            xy_data.expectedAngleRate[2]
-                        );
-
-                         /*
-                        printf("cur_horizonal_control_mode:%d\t", gs.control_infor_in.cur_horizonal_control_mode);
-                        printf("cur_vertical_control_mode:%d\t", gs.control_infor_in.cur_vertical_control_mode);
-                        printf("cur_heading_control_mode:%d\t", gs.control_infor_in.cur_heading_control_mode);
-                        printf("lon:%d\t", gs.control_infor_in.lon);
-                        printf("lat:%d\t", gs.control_infor_in.lat);
-                        printf("alt_satelite:%d\t", gs.control_infor_in.alt_satelite);
-                        printf("barometer_satelite:%d\t", gs.control_infor_in.barometer_satelite);
-                        printf("ve:%d\t", gs.control_infor_in.ve);
-                        printf("vn:%d\t", gs.control_infor_in.vn);
-                        printf("vu:%d\t", gs.control_infor_in.vu);
-                        printf("pos_x:%f\t", gs.control_infor_in.position_x_cur);
-                        printf("pos_y:%f\t", gs.control_infor_in.position_y_cur);
-                        printf("pos_z:%f\t", gs.control_infor_in.position_z_cur);
-                        printf("yaw:%d\t", gs.control_infor_in.yaw);
-                        printf("pitch:%d\t", gs.control_infor_in.pitch);
-                        printf("roll:%d\t", gs.control_infor_in.roll);
-                        printf("throttle_percentage:%d\t", gs.control_infor_in.throttle_percentage);
-                        printf("ax:%d\t", gs.control_infor_in.ax);
-                        printf("ay:%d\t", gs.control_infor_in.ay);
-                        printf("az:%d\t", gs.control_infor_in.az);
-                        printf("gx:%d\t", gs.control_infor_in.gx);
-                        printf("gy:%d\t", gs.control_infor_in.gy);
-                        printf("gz:%d\t", gs.control_infor_in.gz);
-                        printf("uav_status:%d\t", gs.control_infor_in.uav_status);
-                        printf("\r\n");
-                        //    */
+                        xy_data.print();
                     }
                     //printf("for test : recv_ok the num is %d\r\n",ret);
                 }
@@ -328,6 +233,7 @@ void *write_thread(void *arg)                    //write cmd to FCU
         gs.control_infor_out.pitch_ctr = xy_cmd_mode.pitch_ctr;
         gs.control_infor_out.roll_ctr = xy_cmd_mode.roll_ctr;
         gs.control_infor_out.throttle_percentage = xy_cmd_mode.throttle_percentage;
+        gs.control_infor_out.angleRateZ = xy_cmd_mode.angleRateZ;
 
         gs.newctrl_infor_out.sub_command = xy_cmd_mode.landing_cmd;        //0x10：就地降落; 0x28：立即关车
 
@@ -337,18 +243,18 @@ void *write_thread(void *arg)                    //write cmd to FCU
 
         if (xy_cmd_mode.flight_cmd_mode == 11) {
             gs.pack_process();
-            printf("send user cmd data:\n");
-            for (int i = 0; i < gs.control_infor_out_buff.length(); i++) {
-                printf("0x%x ", gs.control_infor_out_buff.buff()[i]);
-            }
-            printf("\n");
+//            printf("send user cmd data:\n");
+//            for (int i = 0; i < gs.control_infor_out_buff.length(); i++) {
+//                printf("0x%x ", gs.control_infor_out_buff.buff()[i]);
+//            }
+//            printf("\n");
         } else if (xy_cmd_mode.flight_cmd_mode == 22) {
             gs.pack_process_N2();
-            printf("send landing cmd data:\n");
-            for (int i = 0; i < gs.newctrl_infor_out_buff.length(); i++) {
-                printf("0x%x ", gs.newctrl_infor_out_buff.buff()[i]);
-            }
-            printf("\n");
+//            printf("send landing cmd data:\n");
+//            for (int i = 0; i < gs.newctrl_infor_out_buff.length(); i++) {
+//                printf("0x%x ", gs.newctrl_infor_out_buff.buff()[i]);
+//            }
+//            printf("\n");
         }
 
 
