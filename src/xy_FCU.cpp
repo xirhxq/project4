@@ -153,12 +153,13 @@ int main(int argc, char *argv[]) {
         msg.data[46] = xy_data.expectedAngleRate[2];
 
         gs_data_pub.publish(msg);
-        rate.sleep();
 
-        printf("-------------");
+        printf("-------------\n");
         xy_data.print();
-        printf("------");
+        printf("------\n");
         xy_cmd_mode.print();
+        
+        rate.sleep();
     }
 
     while (true) {
