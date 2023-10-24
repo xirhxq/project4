@@ -62,7 +62,7 @@ void *write_thread(void *arg);
 
 static void ground_station_sci_recv_sig(int status);
 
-Uart uart("/dev/ttyUSB1", 230400, 8, 1, 0, ground_station_sci_recv_sig);
+Uart uart("/dev/ttyUSB0", 230400, 8, 1, 0, ground_station_sci_recv_sig);
 
 static sem_t ground_station_sem_r;//read senmphore
 static unsigned char recv_ground_station_signal;
