@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
 
         gs_data_pub.publish(msg);
 
-        printf("-------------\n");
+        printf("************\n");
         xy_data.print();
         printf("------\n");
         xy_cmd_mode.print();
@@ -195,8 +195,8 @@ void *read_thread(void *arg) {
                 for (int i = 0; i < ret; i++) {
                     printf("0x%x ", buff[i]);
                 }
-                //*/
                 printf("\r\n");
+                //*/
                 recv_ground_station_signal = 0;
                 if (ret > 0) {
 
@@ -204,7 +204,7 @@ void *read_thread(void *arg) {
                     gs.unpack_process();
 
                     if (gs.gs_state & GS_RECV_CONTROL_MODE) {
-                        xy_data.print();
+                        //xy_data.print();
                     }
                     //printf("for test : recv_ok the num is %d\r\n",ret);
                 }
