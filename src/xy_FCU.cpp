@@ -24,9 +24,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
-#include "groundstation.h"
 
-// ros
 #include "ros/ros.h"
 #include "ros/time.h"
 #include "std_msgs/Float32MultiArray.h"
@@ -110,17 +108,8 @@ int main(int argc, char *argv[]) {
     }
     cout << "XY_data!!!" << endl;
 
-//    pthread_create(&pth1,NULL,ground_station_task,NULL);
-//    usleep(100);
-
     while (nh.ok()) {
         ros::spinOnce();
-        //  ros::AsyncSpinner spinner(2); // Use 2 threads
-        //spinner.start();
-
-        //cout<<"~~out~~ yaw_ctr:"<<gs.control_infor_out.yaw_ctr<<", pitch_ctr:"<<gs.control_infor_out.pitch_ctr<<", roll_ctr:"<<gs.control_infor_out.roll_ctr<<", throttle_ctr:"<<gs.control_infor_out.throttle_percentage<<endl;
-
-        //cout<<"~~~in~~~ horizonal_mode:"<<xy_data.horizonal_mode<<", UAV_height:"<<xy_data.UAV_height<<", Vx:"<<xy_data.UAV_Vel[0]<<", Xm:"<< xy_data.UAV_pos[0]<<", roll_deg:"<< xy_data.UAV_Euler[0]*57.3<<", cur_throttle:"<< xy_data.cur_throttle  <<"UAV_status:"<< xy_data.UAV_status<<endl;
 
         msg.data.resize(47);
         msg.data[0] = xy_data.horizonal_mode;
@@ -168,7 +157,6 @@ int main(int argc, char *argv[]) {
         rate.sleep();
     }
 
-
     while (true) {
         pthread_join(r_thread, NULL);
         break;
@@ -179,7 +167,6 @@ int main(int argc, char *argv[]) {
 static void ground_station_sci_recv_sig(int status) {
     status = 0;
     recv_ground_station_signal = 1;
-    //printf("ground_station_sci_recv_sig\r\n");
     sem_post(&ground_station_sem_r);
     return;
 }

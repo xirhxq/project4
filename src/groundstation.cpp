@@ -51,7 +51,6 @@ GroundStation::GroundStation() {
 }
 
 int GroundStation::child_signal(class Object *child) {
-    //printf("child signal\r\n");
     if (child == gs_tx2_protocl_down) {
         //printf("gs_tx2_protocl_down signal\r\n");
     } else if (child == gs_tx2_protocl_up) {
@@ -79,14 +78,9 @@ int GroundStation::child_signal(class Object *child) {
             xy_data.UAV_lat = double(control_infor_in.lat) / 1000000.0;
             pos += 4;
             memcpy(&control_infor_in.alt_satelite, &(control_infor_buff.buff()[pos]), 4);
-
-
             xy_data.UAV_height = float(control_infor_in.alt_satelite) / 100.0;
-
             pos += 4;
             memcpy(&control_infor_in.barometer_satelite, &(control_infor_buff.buff()[pos]), 4);
-
-
             xy_data.baro_height = float(control_infor_in.barometer_satelite) / 100.0;
             pos += 4;
             memcpy(&control_infor_in.ve, &(control_infor_buff.buff()[pos]), 2);
