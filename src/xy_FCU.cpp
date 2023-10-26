@@ -86,12 +86,12 @@ void guidanceCallback(const std_msgs::Float32MultiArray &msg) {
 
 
 int main(int argc, char *argv[]) {
-    ros::init(argc, argv, "xy_fcu_data_21");
+    ros::init(argc, argv, "xy_fcu", ros::init_options::AnonymousName);
     ros::NodeHandle nh;
     ros::Rate rate(100);   //100Hz
 
-    ros::Publisher gs_data_pub = nh.advertise<std_msgs::Float32MultiArray>("/uav/xy_fcu/flight_data", 10);
-    guidance_command_sub = nh.subscribe("/uav/fl5_guidance/guidance_cmds", 10, guidanceCallback);
+    ros::Publisher gs_data_pub = nh.advertise<std_msgs::Float32MultiArray>("/suav/xy_fcu/flight_data", 10);
+    guidance_command_sub = nh.subscribe("/suav/xy_fcu/xy_cmd", 10, guidanceCallback);
 
     uart.open_sci();
     pthread_t r_thread, w_thread;
