@@ -82,6 +82,48 @@ void guidanceCallback(const std_msgs::Float32MultiArray &msg) {
     xy_cmd_mode.throttle_percentage = (unsigned char) (msg.data[12]);
     xy_cmd_mode.flight_cmd_mode = msg.data[13];
     xy_cmd_mode.landing_cmd = msg.data[14];
+        gs.control_infor_out.horizonal_control_mode = xy_cmd_mode.horizonal_control_mode;
+        gs.control_infor_out.vertical_control_mode = xy_cmd_mode.vertical_control_mode;
+        gs.control_infor_out.heading_control_mode = xy_cmd_mode.heading_control_mode;
+        gs.control_infor_out.position_x_ctr = xy_cmd_mode.position_x_ctr;
+        gs.control_infor_out.position_y_ctr = xy_cmd_mode.position_y_ctr;
+        gs.control_infor_out.position_z_ctr = xy_cmd_mode.position_z_ctr;
+        gs.control_infor_out.ve_ctr = xy_cmd_mode.ve_ctr;
+        gs.control_infor_out.vn_ctr = xy_cmd_mode.vn_ctr;
+        gs.control_infor_out.vu_ctr = xy_cmd_mode.vu_ctr;
+        gs.control_infor_out.yaw_ctr = xy_cmd_mode.yaw_ctr;
+        gs.control_infor_out.pitch_ctr = xy_cmd_mode.pitch_ctr;
+        gs.control_infor_out.roll_ctr = xy_cmd_mode.roll_ctr;
+        gs.control_infor_out.throttle_percentage = xy_cmd_mode.throttle_percentage;
+        gs.control_infor_out.angleRateZ = xy_cmd_mode.angleRateZ;
+
+        gs.newctrl_infor_out.sub_command = xy_cmd_mode.landing_cmd;        //0x10：就地降落; 0x28：立即关车
+
+
+        // 11:USER_MODE; 22: landing_cmd; 33: no ctr
+        // cout<<"flight_cmd_mode="<<xy_cmd_mode.flight_cmd_mode<<endl;
+
+        if (xy_cmd_mode.flight_cmd_mode == 11) {
+            gs.pack_process();
+//            printf("send user cmd data:\n");
+//            for (int i = 0; i < gs.control_infor_out_buff.length(); i++) {
+//                printf("0x%x ", gs.control_infor_out_buff.buff()[i]);
+//            }
+//            printf("\n");
+        } else if (xy_cmd_mode.flight_cmd_mode == 22) {
+            gs.pack_process_N2();
+//            printf("send landing cmd data:\n");
+//            for (int i = 0; i < gs.newctrl_infor_out_buff.length(); i++) {
+//                printf("0x%x ", gs.newctrl_infor_out_buff.buff()[i]);
+//            }
+//            printf("\n");
+        }
+
+
+        int total = uart.write_data(gs.newctrl_infor_out_buff.buff(), gs.newctrl_infor_out_buff.length());
+
+        total = uart.write_data(gs.control_infor_out_buff.buff(), gs.control_infor_out_buff.length());
+//        printf("total %d\r\n", total);
 }
 
 
@@ -103,7 +145,7 @@ int main(int argc, char *argv[]) {
     pthread_t r_thread, w_thread;
 
     pthread_create(&r_thread, NULL, read_thread, 0);
-    pthread_create(&w_thread, NULL, write_thread, 0);
+//    pthread_create(&w_thread, NULL, write_thread, 0);
     int ret = 0;
 
     ret = sem_init(&ground_station_sem_r, 0, 0);
