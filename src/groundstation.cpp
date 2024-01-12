@@ -84,13 +84,13 @@ int GroundStation::child_signal(class Object *child) {
             xy_data.baro_height = float(control_infor_in.barometer_satelite) / 100.0;
             pos += 4;
             memcpy(&control_infor_in.ve, &(control_infor_buff.buff()[pos]), 2);
-            xy_data.UAV_Vel[0] = float(control_infor_in.ve) / 10.0;
+            xy_data.UAV_Vel[0] = float(control_infor_in.ve) / 100.0;
             pos += 2;
             memcpy(&control_infor_in.vn, &(control_infor_buff.buff()[pos]), 2);
-            xy_data.UAV_Vel[1] = float(control_infor_in.vn) / 10.0;
+            xy_data.UAV_Vel[1] = float(control_infor_in.vn) / 100.0;
             pos += 2;
             memcpy(&control_infor_in.vu, &(control_infor_buff.buff()[pos]), 2);
-            xy_data.UAV_Vel[2] = float(control_infor_in.vu) / 10.0;
+            xy_data.UAV_Vel[2] = float(control_infor_in.vu) / 100.0;
             pos += 2;
             memcpy(&control_infor_in.position_x_cur, &(control_infor_buff.buff()[pos]), 4);
             xy_data.UAV_pos[0] = float(control_infor_in.position_x_cur);
